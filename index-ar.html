@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>احتراف بروتوكول MCP | أكاديمية فيلوكس</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --mcp-primary: #6366f1;
+            --mcp-secondary: #8b5cf6;
+            --mcp-accent: #06b6d4;
+            --mcp-dark: #1e1b4b;
+            --mcp-darker: #0f0d2e;
+            --mcp-card: #1e1b4b;
+            --mcp-success: #22c55e;
+            --mcp-text: #f8fafc;
+            --mcp-text-muted: #94a3b8;
+            --mcp-border: rgba(99, 102, 241, 0.2);
+            --glow-primary: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--mcp-darker);
+            color: var(--mcp-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Narration Panel */
+        .narration-panel {
+            position: fixed;
+            bottom: -200px;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(15, 13, 46, 0.98), rgba(30, 27, 75, 0.98));
+            border-top: 2px solid var(--mcp-primary);
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            transition: bottom 0.4s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        .narration-panel.active { bottom: 0; }
+
+        .narration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .narration-title {
+            font-size: 0.875rem;
+            color: var(--mcp-accent);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .narration-title::before {
+            content: '🎙️';
+        }
+
+        .narration-close {
+            background: none;
+            border: none;
+            color: var(--mcp-text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .narration-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--mcp-text);
+        }
+
+        .narration-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(99, 102, 241, 0.9);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            z-index: 999;
+            animation: pulse-hint 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-hint {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* Background */
+        .bg-mesh {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 13, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mcp-border);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 1.25rem; }
+        .logo-icon {
+            width: 40px; height: 40px;
+            background: linear-gradient(135deg, var(--mcp-primary), var(--mcp-secondary));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 1.1rem;
+        }
+
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a {
+            color: var(--mcp-text-muted); text-decoration: none;
+            font-weight: 500; transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--mcp-text); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--mcp-primary), var(--mcp-secondary));
+            color: white; padding: 0.75rem 1.5rem;
+            border-radius: 8px; font-weight: 600;
+            text-decoration: none; transition: all 0.3s;
+            border: none; cursor: pointer;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--glow-primary); }
+
+        .btn-secondary {
+            background: transparent; color: var(--mcp-text);
+            padding: 0.75rem 1.5rem; border-radius: 8px;
+            font-weight: 600; text-decoration: none;
+            border: 1px solid var(--mcp-border); transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: rgba(99, 102, 241, 0.1); border-color: var(--mcp-primary); }
+
+        /* Hero */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px; margin: 0 auto;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--mcp-border);
+            border-radius: 50px;
+            font-size: 0.875rem; color: var(--mcp-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800; line-height: 1.3;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem; color: var(--mcp-text-muted);
+            max-width: 700px; margin: 0 auto 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-cta { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* Stats */
+        .stats-section {
+            padding: 4rem 2rem;
+            background: rgba(30, 27, 75, 0.3);
+            margin: 2rem 0;
+        }
+        .stats-container {
+            max-width: 1000px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;
+        }
+        .stat-item { text-align: center; }
+        .stat-value {
+            font-size: 3rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--mcp-primary), var(--mcp-accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .stat-label { color: var(--mcp-text-muted); font-size: 0.875rem; margin-top: 0.5rem; }
+
+        /* Pipeline */
+        .pipeline-section {
+            padding: 4rem 2rem;
+            max-width: 1200px; margin: 0 auto;
+        }
+
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-header h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .section-header p { color: var(--mcp-text-muted); }
+
+        .pipeline-container {
+            position: relative;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 1rem; flex-wrap: wrap;
+        }
+
+        .pipeline-line {
+            position: absolute;
+            top: 40px;
+            left: 60px; right: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                var(--mcp-success) 0%, var(--mcp-success) 25%, 
+                var(--mcp-primary) 25%, var(--mcp-primary) 50%,
+                var(--mcp-text-muted) 50%, var(--mcp-text-muted) 100%
+            );
+            border-radius: 4px; z-index: 0;
+        }
+
+        .module-card {
+            position: relative; z-index: 1;
+            flex: 1; min-width: 250px; max-width: 280px;
+            background: var(--mcp-card);
+            border: 1px solid var(--mcp-border);
+            border-radius: 16px; padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .module-card:hover { transform: translateY(-8px); border-color: var(--mcp-primary); box-shadow: var(--glow-primary); }
+        .module-card.completed { border-color: var(--mcp-success); }
+        .module-card.in-progress { border-color: var(--mcp-primary); animation: border-glow 3s ease-in-out infinite; }
+
+        @keyframes border-glow {
+            0%, 100% { border-color: var(--mcp-primary); }
+            50% { border-color: var(--mcp-accent); }
+        }
+
+        .module-status { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+        .module-number {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.875rem;
+        }
+        .completed .module-number { background: var(--mcp-success); color: var(--mcp-darker); }
+        .in-progress .module-number { background: var(--mcp-primary); color: white; }
+        .locked .module-number { background: rgba(148, 163, 184, 0.1); color: var(--mcp-text-muted); border: 1px solid var(--mcp-border); }
+
+        .status-badge {
+            font-size: 0.75rem; padding: 0.25rem 0.5rem;
+            border-radius: 4px; font-weight: 600;
+        }
+        .status-badge.completed { background: rgba(34, 197, 94, 0.1); color: var(--mcp-success); }
+        .status-badge.in-progress { background: rgba(99, 102, 241, 0.1); color: var(--mcp-primary); }
+        .status-badge.locked { background: rgba(148, 163, 184, 0.1); color: var(--mcp-text-muted); }
+
+        .module-card h3 { font-size: 1.125rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .module-card p { font-size: 0.875rem; color: var(--mcp-text-muted); line-height: 1.6; margin-bottom: 1rem; }
+        .module-meta { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--mcp-text-muted); }
+        .module-meta span { display: flex; align-items: center; gap: 0.25rem; }
+
+        .module-actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+        .btn-small { padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; text-decoration: none; transition: all 0.3s; }
+        .btn-continue { background: var(--mcp-primary); color: white; }
+        .btn-continue:hover { background: var(--mcp-secondary); }
+        .btn-review { background: rgba(99, 102, 241, 0.1); color: var(--mcp-primary); border: 1px solid var(--mcp-border); }
+        .btn-locked { background: rgba(148, 163, 184, 0.1); color: var(--mcp-text-muted); cursor: not-allowed; border: none; }
+
+        /* Features */
+        .features-section { padding: 4rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .feature-card {
+            background: var(--mcp-card); border: 1px solid var(--mcp-border);
+            border-radius: 12px; padding: 1.5rem; transition: all 0.3s;
+        }
+        .feature-card:hover { border-color: var(--mcp-primary); transform: translateY(-4px); }
+        .feature-icon {
+            width: 48px; height: 48px; background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; margin-bottom: 1rem;
+        }
+        .feature-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .feature-card p { font-size: 0.875rem; color: var(--mcp-text-muted); line-height: 1.6; }
+
+        /* Footer */
+        footer { padding: 3rem 2rem; border-top: 1px solid var(--mcp-border); text-align: center; color: var(--mcp-text-muted); }
+        footer a { color: var(--mcp-primary); text-decoration: none; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pipeline-line { display: none; }
+            .pipeline-container { flex-direction: column; align-items: center; }
+            .module-card { width: 100%; max-width: 100%; }
+            .stats-container { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: 1fr; }
+            .narration-panel { padding: 1rem; }
+            .narration-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Narration Hint -->
+    <div class="narration-hint" id="narrationHint">
+        اضغط <strong>C</strong> لسماع الشرح 🎙️
+    </div>
+
+    <!-- Narration Panel -->
+    <div class="narration-panel" id="narrationPanel">
+        <div class="narration-header">
+            <span class="narration-title">الشرح الصوتي</span>
+            <button class="narration-close" onclick="toggleNarration()">×</button>
+        </div>
+        <div class="narration-text" id="narrationText">
+            اضغط حرف C لعرض الشرح الخاص بالقسم الحالي
+        </div>
+    </div>
+
+    <div class="bg-mesh"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">MCP</div>
+            <span>أكاديمية فيلوكس</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#curriculum">المنهج</a>
+            <a href="#features">المحتوى</a>
+            <a href="javascript:void(0)" onclick="toggleNarration()">🎙️ الشرح</a>
+            <a href="https://github.com/velox-ai-agency/mcp-protocol-course" target="_blank" class="btn-secondary">GitHub ↗</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" data-narration="hero">
+        <div class="badge">● الكورس متاح الآن</div>
+        <h1>احترف بروتوكول MCP</h1>
+        <p class="hero-subtitle">
+            الدليل الشامل لبناء أدوات الذكاء الاصطناعي باستخدام MCP.
+            من الأساسيات للإنتاج — تعلم كيف تربط Claude وCursor مع قواعد البيانات والـ APIs.
+        </p>
+        <div class="hero-cta">
+            <a href="#module-1" class="btn-primary">ابدأ التعلم ←</a>
+            <a href="https://github.com/velox-ai-agency/mcp-protocol-course" target="_blank" class="btn-secondary">عرض على GitHub</a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" data-narration="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value">4</div>
+                <div class="stat-label">وحدات تعليمية</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">16+</div>
+                <div class="stat-label">درس عملي</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">25+</div>
+                <div class="stat-label">مثال برمجي</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">مجاني ومفتوح</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline Section -->
+    <section class="pipeline-section" id="curriculum" data-narration="pipeline">
+        <div class="section-header">
+            <h2>📚 مسار التعلم</h2>
+            <p>4 وحدات • 16 درس • بالوتيرك الخاص</p>
+        </div>
+
+        <div class="pipeline-container">
+            <div class="pipeline-line"></div>
+
+            <!-- Module 1 -->
+            <div class="module-card completed" id="module-1">
+                <div class="module-status">
+                    <div class="module-number">01</div>
+                    <span class="status-badge completed">✓ مكتمل</span>
+                </div>
+                <h3>مقدمة في MCP</h3>
+                <p>ما هو MCP، لماذا يهم، والمكونات الثلاثة الأساسية.</p>
+                <div class="module-meta">
+                    <span>📖 4 دروس</span>
+                    <span>✏️ 3 تمارين</span>
+                </div>
+                <div class="module-actions">
+                    <a href="module-01-intro/" class="btn-small btn-review">مراجعة الوحدة</a>
+                </div>
+            </div>
+
+            <!-- Module 2 -->
+            <div class="module-card in-progress" id="module-2">
+                <div class="module-status">
+                    <div class="module-number">02</div>
+                    <span class="status-badge in-progress">● بالتقدم</span>
+                </div>
+                <h3>الهيكل المعماري</h3>
+                <p>طبقات النقل، بروتوكول JSON-RPC، دورة الحياة، ونموذج الأمان.</p>
+                <div class="module-meta">
+                    <span>📖 4 دروس</span>
+                    <span>✏️ 5 تمارين</span>
+                </div>
+                <div class="module-actions">
+                    <a href="module-02-architecture/" class="btn-small btn-continue">استمر ←</a>
+                </div>
+            </div>
+
+            <!-- Module 3 -->
+            <div class="module-card locked" id="module-3">
+                <div class="module-status">
+                    <div class="module-number">03</div>
+                    <span class="status-badge locked">🔒 مغلق</span>
+                </div>
+                <h3>بناء أول سيرفر</h3>
+                <p>تطبيق عملي: Hello World، Calculator، Filesystem، Prompts.</p>
+                <div class="module-meta">
+                    <span>📖 5 دروس</span>
+                    <span>✏️ 5 تمارين</span>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-small btn-locked" disabled>أكمل الوحدة 2</button>
+                </div>
+            </div>
+
+            <!-- Module 4 -->
+            <div class="module-card locked" id="module-4">
+                <div class="module-status">
+                    <div class="module-number">04</div>
+                    <span class="status-badge locked">🔒 مغلق</span>
+                </div>
+                <h3>أنماط متقدمة</h3>
+                <p>تنسيق عدة سيرفرات، الإشعارات، أنماط الإنتاج.</p>
+                <div class="module-meta">
+                    <span>📖 3 دروس</span>
+                    <span>✏️ 3 تمارين</span>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-small btn-locked" disabled>أكمل الوحدة 3</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features" data-narration="features">
+        <div class="section-header">
+            <h2>🎯 هتتعلم إيه؟</h2>
+            <p>MCP مهارات عملية تقدر تستخدمها فوراً</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>بناء أدوات مخصصة</h3>
+                <p>اعمل سيرفرات MCP تعرض وظائف مخصصة لأي agent — من حاسبات بسيطة لـ integrations معطqه.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>ربط مصادر البيانات</h3>
+                <p>اعرف ازاي تربط ملفات وdatabases وAPIs مع Claude و Cursor بطريقة آمنة.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>أفضل ممارسات الأمان</h3>
+                <p>valid inputs, path traversal prevention, secrets management للـ production.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Debugging & Testing</h3>
+                <p>أتقن MCP Inspector وتقنيات Testing عشان تبني سيرفرات قوية ومختبرة.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>نشر في الإنتاج</h3>
+                <p>تعلم أنماط النشر للـ cloud environments مع monitoring كامل.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>TypeScript & Python</h3>
+                <p>أمثلة كاملة بلغتين — اختار اللي يناسبك!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="features-section" id="resources" data-narration="resources">
+        <div class="section-header">
+            <h2>📦 موارد الكورس</h2>
+            <p>كل اللي تحتاجه للنجاح</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>دروس مكتوبة</h3>
+                <p>شروحات مفصلة، رسومات توضيحية، خطوات خطوة بخطوة. مثالية للمرجع والتعلم العميق.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <h3>تمارين & حلول</h3>
+                <p>تمارين برمجية عملية مع مفاتيح الإجابة. تمرن على بناء سيرفرات MCP خاصتك.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3>أمثلة برمجية</h3>
+                <p>أمثلة عملية كاملة بلغتين. انسخ والصق وعدل حسب احتياجك.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>رسوم هيكلية</h3>
+                <p>توضيحات بصرية لمفاهيم MCP — ازاي hosts و servers و clients يتفاعلوا مع بعض.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>احتراف بروتوكول MCP • <a href="https://github.com/velox-ai-agency/mcp-protocol-course" target="_blank">عرض على GitHub</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">صنع بـ ❤️ بواسطة <a href="https://veloxai.io" target="_blank">أكاديمية فيلوكس</a></p>
+    </footer>
+
+    <!-- Narration Scripts -->
+    <script>
+        // Narration scripts for each section (for voiceover)
+        const narrations = {
+            hero: `مرحبا بيك في كورس احتراف بروتوكول MCP.
+
+MCP أو Model Context Protocol، هو بروتوكول مفتوح طورته شركة أنتروبيك عشان يسمح للـ AI assistants زي Claude إنهم يتصلوا بالـ external data sources والـ tools.
+
+تخيل إنك تقدر تخلي Claude يقرأ ملفاتك، يتعامل مع database، أو يشغل functions مخصصة — كل ده من خلال protocol standardized.
+
+الكورس ده هياخدك من الصفر للاحتراف في بناء MCP servers. هتتعلم الأرشيتكشر، هتبني أول سيرفر، وهتفهم أنماط متقدمة للـ production.
+
+وأحسن حاجة؟ الكورس مجاني ومفتوح المصدر بالكامل. يلا بينا نبدأ!`,
+
+            stats: `الكورس مقسم لأربع وحدات رئيسية.
+
+الوحدة الأولى هي مقدمة في MCP — هنفهم إيه هو البروتوكول وإزاي بيشتغل.
+
+الوحدة التانية عن الأرشيتكشر — هندخل في التفاصيل التقنية.
+
+الوحدة التالتة تطبيقية بالكامل — هنبني سيرفرات حقيقية.
+
+والوحدة الرابعة للأنماط المتقدمة والـ production.
+
+مجموع الدروس أكتر من 16 درس، وفي أكتر من 25 مثال برمجي جاهز للاستخدام.`,
+
+            pipeline: `ده مسار التعلم بتاعك.
+
+كل وحدة ليها حالة: مكتملة، بالتقدم، أو مغلقة لسه.
+
+الخطة هي إنك تكمل الوحدات بالترتيب — كل وحدة بتبني على اللي قبلها.
+
+الوحدة الأولى خلاص متاحة. التانية بالتقدم. الثالثة والرابعة هتتفتح لما تكمل اللي قبلهم.
+
+الـ pipeline ده بيوضحلك مكانك وإزاي تتقدم في الكورس.`,
+
+            features: `في الكورس ده هتتعلم مهارات عملية مباشرة.
+
+هتعرف تبني custom tools — سيرفرات MCP تعرض وظائف مخصصة.
+
+هتتعلم تربط أي data source — ملفات، databases، APIs.
+
+هتفهم security best practices — عشان سيرفراتك تكون safe.
+
+هتتعلم debugging و testing باستخدام MCP Inspector.
+
+وهتعرف أنماط النشر للـ production environments.
+
+كل ده متاح بلغتين: TypeScript و Python — اختار اللي يناسبك.`,
+
+            resources: `الكورس بيوفرلك كل الموارد اللي تحتاجها.
+
+فيه دروس مكتوبة مفصلة مع diagrams توضيحية.
+
+فيه تمارين عملية مع حلولها — تطبيق عملي.
+
+فيه code examples جاهزة للنسخ والتعديل.
+
+وفيه architecture diagrams توضحلك إزاي الأجزاء تتفاعل مع بعض.
+
+كل حاجة على GitHub، مجانية، ومفتوحة للمساهمة.`
+        };
+
+        let isPanelOpen = false;
+        let currentSection = 'hero';
+
+        function toggleNarration() {
+            const panel = document.getElementById('narrationPanel');
+            const text = document.getElementById('narrationText');
+            const hint = document.getElementById('narrationHint');
+            
+            isPanelOpen = !isPanelOpen;
+            
+            if (isPanelOpen) {
+                panel.classList.add('active');
+                text.textContent = narrations[currentSection] || narrations.hero;
+                hint.style.display = 'none';
+            } else {
+                panel.classList.remove('active');
+                hint.style.display = 'block';
+            }
+        }
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'c' || e.key === 'C') {
+                e.preventDefault();
+                toggleNarration();
+            }
+            if (e.key === 'Escape' && isPanelOpen) {
+                toggleNarration();
+            }
+        });
+
+        // Track scroll position for active section
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('[data-narration]');
+            const scrollPos = window.scrollY + window.innerHeight / 2;
+            
+            sections.forEach(section => {
+                const top = section.offsetTop;
+                const bottom = top + section.offsetHeight;
+                
+                if (scrollPos >= top && scrollPos <= bottom) {
+                    currentSection = section.dataset.narration;
+                    if (isPanelOpen) {
+                        document.getElementById('narrationText').textContent = narrations[currentSection];
+                    }
+                }
+            });
+        });
+
+        // Auto-hide hint after 10 seconds
+        setTimeout(() => {
+            const hint = document.getElementById('narrationHint');
+            if (hint) hint.style.opacity = '0.5';
+        }, 10000);
+    </script>
+</body>
+</html>
