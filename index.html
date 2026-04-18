@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering MCP Protocol | Velox AI Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* MCP Brand Colors */
+            --mcp-primary: #6366f1;
+            --mcp-secondary: #8b5cf6;
+            --mcp-accent: #06b6d4;
+            --mcp-dark: #1e1b4b;
+            --mcp-darker: #0f0d2e;
+            --mcp-card: #1e1b4b;
+            --mcp-success: #22c55e;
+            --mcp-warning: #f59e0b;
+            --mcp-error: #ef4444;
+            --mcp-text: #f8fafc;
+            --mcp-text-muted: #94a3b8;
+            --mcp-border: rgba(99, 102, 241, 0.2);
+            
+            /* Glow Effects */
+            --glow-primary: 0 0 40px rgba(99, 102, 241, 0.3);
+            --glow-accent: 0 0 40px rgba(6, 182, 212, 0.3);
+            --glow-success: 0 0 40px rgba(34, 197, 94, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--mcp-darker);
+            color: var(--mcp-text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 13, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mcp-border);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--mcp-primary), var(--mcp-secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--mcp-text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--mcp-text);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--mcp-primary), var(--mcp-secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid var(--mcp-border);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: var(--mcp-accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .badge::before {
+            content: '●';
+            color: var(--mcp-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--mcp-text-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--mcp-text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--mcp-border);
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: var(--mcp-primary);
+        }
+
+        /* Pipeline Visualization */
+        .pipeline-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--mcp-text-muted);
+        }
+
+        .pipeline-container {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .pipeline-line {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            right: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                var(--mcp-success) 0%, 
+                var(--mcp-success) 25%, 
+                var(--mcp-primary) 25%, 
+                var(--mcp-primary) 50%,
+                var(--mcp-text-muted) 50%, 
+                var(--mcp-text-muted) 100%
+            );
+            border-radius: 4px;
+            z-index: 0;
+        }
+
+        .pipeline-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(15, 13, 46, 1));
+        }
+
+        .module-card {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            min-width: 250px;
+            max-width: 280px;
+            background: var(--mcp-card);
+            border: 1px solid var(--mcp-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--mcp-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        .module-card.completed {
+            border-color: var(--mcp-success);
+        }
+
+        .module-card.in-progress {
+            border-color: var(--mcp-primary);
+            animation: border-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes border-glow {
+            0%, 100% { border-color: var(--mcp-primary); }
+            50% { border-color: var(--mcp-accent); }
+        }
+
+        .module-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .module-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .completed .module-number {
+            background: var(--mcp-success);
+            color: var(--mcp-darker);
+        }
+
+        .in-progress .module-number {
+            background: var(--mcp-primary);
+            color: white;
+        }
+
+        .locked .module-number {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--mcp-text-muted);
+            border: 1px solid var(--mcp-border);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .status-badge.completed {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--mcp-success);
+        }
+
+        .status-badge.in-progress {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--mcp-primary);
+        }
+
+        .status-badge.locked {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--mcp-text-muted);
+        }
+
+        .module-card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-card p {
+            font-size: 0.875rem;
+            color: var(--mcp-text-muted);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .module-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: var(--mcp-text-muted);
+        }
+
+        .module-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .module-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .btn-continue {
+            background: var(--mcp-primary);
+            color: white;
+        }
+
+        .btn-continue:hover {
+            background: var(--mcp-secondary);
+        }
+
+        .btn-review {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--mcp-primary);
+            border: 1px solid var(--mcp-border);
+        }
+
+        .btn-review:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-locked {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--mcp-text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            padding: 4rem 2rem;
+            background: rgba(30, 27, 75, 0.3);
+            margin: 2rem 0;
+        }
+
+        .stats-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--mcp-primary), var(--mcp-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--mcp-text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: var(--mcp-card);
+            border: 1px solid var(--mcp-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--mcp-primary);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.875rem;
+            color: var(--mcp-text-muted);
+            line-height: 1.5;
+        }
+
+        /* Code Preview */
+        .code-section {
+            padding: 4rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .code-window {
+            background: var(--mcp-card);
+            border: 1px solid var(--mcp-border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--mcp-border);
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot.red { background: #ef4444; }
+        .code-dot.yellow { background: #f59e0b; }
+        .code-dot.green { background: #22c55e; }
+
+        .code-title {
+            margin-left: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--mcp-text-muted);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .code-keyword { color: #c084fc; }
+        .code-string { color: #86efac; }
+        .code-function { color: #60a5fa; }
+        .code-comment { color: #64748b; }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--mcp-border);
+            text-align: center;
+            color: var(--mcp-text-muted);
+        }
+
+        footer a {
+            color: var(--mcp-primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pipeline-line {
+                display: none;
+            }
+            
+            .pipeline-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .module-card {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">MCP</div>
+            <span>Velox Academy</span>
+        </div>
+        <nav class="nav-links">
+            <a href="#curriculum">Curriculum</a>
+            <a href="#features">Features</a>
+            <a href="#resources">Resources</a>
+            <a href="https://github.com/velox-ai-agency/mcp-protocol-course" target="_blank" class="btn-secondary">GitHub ↗</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="badge">● Course Available Now</div>
+        <h1>Master the Model Context Protocol</h1>
+        <p class="hero-subtitle">
+            The complete guide to building AI-powered tools with MCP. 
+            From fundamentals to production — learn how to connect Claude, Cursor, and any AI agent 
+            to external data sources, APIs, and services.
+        </p>
+        <div class="hero-cta">
+            <a href="#module-1" class="btn-primary">Start Learning →</a>
+            <a href="https://github.com/velox-ai-agency/mcp-protocol-course" target="_blank" class="btn-secondary">View on GitHub</a>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value">4</div>
+                <div class="stat-label">Core Modules</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">16+</div>
+                <div class="stat-label">Hands-on Lessons</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">25+</div>
+                <div class="stat-label">Code Examples</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Free & Open Source</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline / Curriculum Section -->
+    <section class="pipeline-section" id="curriculum">
+        <div class="section-header">
+            <h2>📚 Learning Path</h2>
+            <p>4 modules • 16 lessons • Take it at your own pace</p>
+        </div>
+
+        <div class="pipeline-container">
+            <div class="pipeline-line"></div>
+
+            <!-- Module 1 -->
+            <div class="module-card completed" id="module-1">
+                <div class="module-status">
+                    <div class="module-number">01</div>
+                    <span class="status-badge completed">✓ Complete</span>
+                </div>
+                <h3>Introduction to MCP</h3>
+                <p>What is MCP, why it matters, and the three core components that make it work.</p>
+                <div class="module-meta">
+                    <span>📖 4 Lessons</span>
+                    <span>✏️ 3 Exercises</span>
+                </div>
+                <div class="module-actions">
+                    <a href="module-01-intro/" class="btn-small btn-review">Review Module</a>
+                </div>
+            </div>
+
+            <!-- Module 2 -->
+            <div class="module-card in-progress" id="module-2">
+                <div class="module-status">
+                    <div class="module-number">02</div>
+                    <span class="status-badge in-progress">● In Progress</span>
+                </div>
+                <h3>Architecture Deep Dive</h3>
+                <p>Transport layers, JSON-RPC protocol, lifecycle, and security model.</p>
+                <div class="module-meta">
+                    <span>📖 4 Lessons</span>
+                    <span>✏️ 5 Exercises</span>
+                </div>
+                <div class="module-actions">
+                    <a href="module-02-architecture/" class="btn-small btn-continue">Continue →</a>
+                </div>
+            </div>
+
+            <!-- Module 3 -->
+            <div class="module-card locked" id="module-3">
+                <div class="module-status">
+                    <div class="module-number">03</div>
+                    <span class="status-badge locked">🔒 Locked</span>
+                </div>
+                <h3>Building Your First Server</h3>
+                <p>Hands-on coding: Hello World, Calculator, Filesystem, and Prompts.</p>
+                <div class="module-meta">
+                    <span>📖 5 Lessons</span>
+                    <span>✏️ 5 Exercises</span>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-small btn-locked" disabled">Complete Module 2</button>
+                </div>
+            </div>
+
+            <!-- Module 4 -->
+            <div class="module-card locked" id="module-4">
+                <div class="module-status">
+                    <div class="module-number">04</div>
+                    <span class="status-badge locked">🔒 Locked</span>
+                </div>
+                <h3>Advanced Patterns</h3>
+                <p>Multi-server orchestration, subscriptions, production patterns.</p>
+                <div class="module-meta">
+                    <span>📖 3 Lessons</span>
+                    <span>✏️ 3 Exercises</span>
+                </div>
+                <div class="module-actions">
+                    <button class="btn-small btn-locked" disabled">Complete Module 3</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>🎯 What You'll Learn</h2>
+            <p>Practical skills you can apply immediately</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>Build Custom Tools</h3>
+                <p>Create MCP servers that expose custom functionality to any AI agent — from simple calculators to complex database integrations.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Connect Data Sources</h3>
+                <p>Learn how to safely expose files, databases, and APIs to Claude, Cursor, and other MCP-compatible hosts.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Security Best Practices</h3>
+                <p>Implement proper input validation, path traversal prevention, and secrets management for production servers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Debug & Test</h3>
+                <p>Master MCP Inspector and testing techniques to build reliable, well-tested servers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Deploy to Production</h3>
+                <p>Learn deployment patterns for hosting MCP servers in cloud environments with proper monitoring.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>TypeScript & Python</h3>
+                <p>Complete examples in both languages — choose what works best for your stack.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Preview Section -->
+    <section class="code-section">
+        <div class="section-header">
+            <h2>💻 Real Code Examples</h2>
+            <p>Production-ready patterns you can use immediately</p>
+        </div>
+        <div class="code-window">
+            <div class="code-header">
+                <div class="code-dot red"></div>
+                <div class="code-dot yellow"></div>
+                <div class="code-dot green"></div>
+                <span class="code-title">hello-server.ts</span>
+            </div>
+            <div class="code-content">
+                <pre><span class="code-keyword">import</span> { Server } <span class="code-keyword">from</span> <span class="code-string">"@modelcontextprotocol/sdk/server/index.js"</span>;
+<span class="code-keyword">import</span> { StdioServerTransport } <span class="code-keyword">from</span> <span class="code-string">"@modelcontextprotocol/sdk/server/stdio.js"</span>;
+
+<span class="code-keyword">const</span> server = <span class="code-keyword">new</span> <span class="code-function">Server</span>(
+  { name: <span class="code-string">"hello-server"</span>, version: <span class="code-string">"1.0.0"</span> },
+  { capabilities: { tools: {} } }
+);
+
+server.<span class="code-function">setRequestHandler</span>(ListToolsRequestSchema, <span class="code-keyword">async</span> () => {
+  <span class="code-keyword">return</span> {
+    tools: [{
+      name: <span class="code-string">"hello"</span>,
+      description: <span class="code-string">"Say hello"</span>,
+      inputSchema: {
+        type: <span class="code-string">"object"</span>,
+        properties: { 
+          name: { type: <span class="code-string">"string"</span> } 
+        },
+        required: [<span class="code-string">"name"</span>]
+      }
+    }]
+  };
+});
+
+<span class="code-comment">// Server implements the Model Context Protocol</span>
+<span class="code-comment">// Connect it to Claude, Cursor, or any MCP host →</span></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resources Section -->
+    <section class="features-section" id="resources">
+        <div class="section-header">
+            <h2>📦 Course Resources</h2>
+            <p>Everything you need to succeed</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>Written Lessons</h3>
+                <p>Detailed explanations, diagrams, and step-by-step guides. Perfect for reference and deep learning.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <h3>Exercises & Solutions</h3>
+                <p>Hands-on coding exercises with answer keys. Practice building your own MCP servers.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3>Code Examples</h3>
+                <p>Complete working examples in TypeScript and Python. Copy, paste, and modify for your needs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Architecture Diagrams</h3>
+                <p>Visual explanations of MCP concepts — how hosts, servers, and clients interact.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Mastering MCP Protocol • <a href="https://github.com/velox-ai-agency/mcp-protocol-course" target="_blank">View on GitHub</a></p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Built with ❤️ by <a href="https://veloxai.io" target="_blank">Velox AI Academy</a></p>
+    </footer>
+</body>
+</html>
